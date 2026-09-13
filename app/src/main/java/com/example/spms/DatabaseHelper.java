@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smart_pantry_management.db";
@@ -37,5 +40,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS recipes");
         db.execSQL("DROP TABLE IF EXISTS pantry");
         onCreate(db);
+    }
+
+    // Pantry Crud Operations
+    public long addPantryItem(PantryItem item){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", item.getName().trim());
+        values.put("quantity", item.getQuantity());
+        values.put("unit", item.getUnit());
+        values.put("expiry", item.getExpiry());
+        return db.insert("pantry", null, values);
+    }
+
+    public List<PantryItem> getAllPantryItems(){
+        List<PantryItem> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM pantry ORDER BY name ASC", null);
+        if (cur.moveToFirst()){
+            do {
+                int pantry_ID = cur.getInt(cur.getColumnIndexOrThrow("pantry_ID"));
+                String name = cur.getString(cur.getColumnIndexOrThrow("name"));
+                double quantity = cur.getDouble(cur.getColumnIndexOrThrow("quantity"));
+                String unit = cur.getString(cur.getColumnIndexOrThrow("unit"));
+                String expiry = cur.getString(cur.getColumnIndexOrThrow("expiry"));
+                list.add(new PantryItem(pantry_ID, name, quantity, unit, expiry));
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        return list;
+    }
+
+    public int updatePantryItem(PantryItem item){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", item.getName().trim());
+        values.put("quantity", item.getQuantity());
+        values.put("unit", item.getUnit());
+        values.put("expiry", item.getExpiry());
+        return db.update("pantry", values, "pantry_ID = ?", new String[]{String.valueOf(item.getPantry_ID())});
+    }
+
+    public void deletePantryItem(int pantry_ID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("pantry", "pantry_ID = ?", new String[]{String.valueOf(pantry_ID)});
     }
 }
