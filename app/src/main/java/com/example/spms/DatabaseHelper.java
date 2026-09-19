@@ -31,6 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE pantry(pantry_ID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, quantity REAL, unit TEXT, expiry TEXT);");
         db.execSQL("CREATE TABLE recipes(recipes_ID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, instructions TEXT); ");
         db.execSQL("CREATE TABLE recipe_ingredients(RI_ID INTEGER PRIMARY KEY AUTOINCREMENT, recipe_ID INTEGER, name TEXT, quantity REAL, unit TEXT, FOREIGN KEY (recipe_ID) REFERENCES recipes(recipes_ID) ON DELETE CASCADE);");
+        seedInitialRecipes(db);
     }
 
     // Used if you are creating a new database version
@@ -43,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Pantry Crud Operations
-    public long addPantryItem(PantryItem item){
+    public long addPantryItem(pantryItem item){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("name", item.getName().trim());
@@ -53,8 +54,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.insert("pantry", null, values);
     }
 
-    public List<PantryItem> getAllPantryItems(){
-        List<PantryItem> list = new ArrayList<>();
+    public List<pantryItem> getAllPantryItems(){
+        List<pantryItem> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cur = db.rawQuery("SELECT * FROM pantry ORDER BY name ASC", null);
         if (cur.moveToFirst()){
@@ -64,14 +65,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 double quantity = cur.getDouble(cur.getColumnIndexOrThrow("quantity"));
                 String unit = cur.getString(cur.getColumnIndexOrThrow("unit"));
                 String expiry = cur.getString(cur.getColumnIndexOrThrow("expiry"));
-                list.add(new PantryItem(pantry_ID, name, quantity, unit, expiry));
+                list.add(new pantryItem(pantry_ID, name, quantity, unit, expiry));
             } while (cur.moveToNext());
         }
         cur.close();
         return list;
     }
 
-    public int updatePantryItem(PantryItem item){
+    public int updatePantryItem(pantryItem item){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("name", item.getName().trim());
@@ -84,5 +85,142 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deletePantryItem(int pantry_ID){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("pantry", "pantry_ID = ?", new String[]{String.valueOf(pantry_ID)});
+    }
+
+    // Strict Logic
+    public List<Recipe> getSuggestedRecipes(){
+        List<Recipe> matchingRecipes = new ArrayList<>();
+        List<pantryItem> pantry = getAllPantryItems();
+        List<Recipe> allRecipes = getAllRecipesWithIngredients();
+
+        for (Recipe recipe : allRecipes) {
+            boolean canMake = true;
+
+            for (RecipeIngredient repIng : recipe.getIngredients()) {
+                boolean found = false;
+
+                for (pantryItem pantryItem : pantry) {
+                    if (isNameMatch(repIng.getName(), pantryItem.getName())) {
+                        double normalizedPantryQuantity = normalizeQuantity(pantryItem.getQuantity(), pantryItem.getUnit());
+                        double normalizedRepQuantity = normalizeQuantity(repIng.getQuantity(), repIng.getUnit());
+                        if (normalizedPantryQuantity >= normalizedRepQuantity) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    canMake = false;
+                    break;
+                }
+            }
+            if (canMake && !recipe.getIngredients().isEmpty()) {
+                matchingRecipes.add(recipe);
+            }
+        }
+        return matchingRecipes;
+    }
+
+    private boolean isNameMatch(String name1, String name2){
+        String n1 = name1.trim().toLowerCase();
+        String n2 = name2.trim().toLowerCase();
+
+        if(n1.equals(n2)) return true;
+        if((n1 + "s").equals(n2) || (n2 + "s").equals(n1)) return true;
+        if((n1 + "es").equals(n2) || (n2 + "es").equals(n1)) return true;
+
+        return false;
+    }
+
+    private double normalizeQuantity(double quantity, String unit){
+        if(unit == null) return quantity;
+        String u = unit.trim().toLowerCase();
+
+        switch(u){
+            case "kg": case "kilogram": case "kilograms": case "l": case "liter": case "liters": return quantity * 1000.0;
+            default: return quantity;
+        }
+    }
+
+    private List<Recipe> getAllRecipesWithIngredients(){
+        List<Recipe> recipes = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM recipes", null);
+
+        if(cur.moveToFirst()){
+            do{
+                int recipe_ID = cur.getInt(cur.getColumnIndexOrThrow("recipes_ID"));
+                String name = cur.getString(cur.getColumnIndexOrThrow("name"));
+                String instructions = cur.getString(cur.getColumnIndexOrThrow("instructions"));
+                Recipe recipe = new Recipe(recipe_ID, name, instructions);
+                recipe.setIngredients(getIngredientsForRecipe(db, recipe_ID));
+                recipes.add(recipe);
+            }while(cur.moveToNext());
+        }
+        cur.close();
+        return recipes;
+    }
+
+    private List<RecipeIngredient> getIngredientsForRecipe(SQLiteDatabase db, int recipe_ID){
+        List<RecipeIngredient> ingredients = new ArrayList<>();
+        Cursor cur = db.rawQuery("SELECT * FROM recipe_ingredients WHERE recipe_ID = ?", new String[]{String.valueOf(recipe_ID)});
+
+        if(cur.moveToFirst()){
+            do{
+                String name = cur.getString(cur.getColumnIndexOrThrow("name"));
+                double quantity = cur.getDouble(cur.getColumnIndexOrThrow("quantity"));
+                String unit = cur.getString(cur.getColumnIndexOrThrow("unit"));
+                ingredients.add(new RecipeIngredient(name, quantity, unit));
+            }while(cur.moveToNext());
+        }
+        cur.close();
+        return ingredients;
+    }
+    private void addSeededRecipe(SQLiteDatabase db, String name, String instructions, String[] ingNames,double[] quantity, String[] units){
+        ContentValues cValues = new ContentValues();
+        cValues.put("name", name);
+        cValues.put("instructions", instructions);
+        long recipe_ID = db.insert("recipes", null, cValues);
+
+        for(int i = 0; i< ingNames.length; i++){
+            ContentValues iValues = new ContentValues();
+            iValues.put("recipe_ID", recipe_ID);
+            iValues.put("name", ingNames[i]);
+            iValues.put("quantity", quantity[i]);
+            iValues.put("unit", units[i]);
+            db.insert("recipe_ingredients", null, iValues);
+        }
+    }
+    private void seedInitialRecipes(SQLiteDatabase db){
+        addSeededRecipe(db, "Scrambles Eggs",  "1. Whisk eggs.\n2. Melt butter in pan.\n3. Cook on low heat.",
+                new String[]{"egg", "butter"}, new double[]{2,10}, new String[]{"pcs", "g"});
+        addSeededRecipe(db, "Boiled Eggs", "1. Place eggs in boiling water.\n2. Boil for 7 minutes.",
+                new String[]{"egg"}, new double[]{2}, new String[]{"pcs"});
+        addSeededRecipe(db, "Pancakes", "1. Mix ingredients.\n2. Cook batter on skillet until golden.",
+                new String[]{"flour", "egg", "milk", "butter"}, new double[]{200, 1, 250, 15}, new String[]{"g", "pcs", "ml", "g"});
+        addSeededRecipe(db, "Omelette", "1. Beat eggs.\n2. Cook with cheese in pan.",
+                new String[]{"egg", "cheese", "butter"}, new double[]{3, 50, 10}, new String[]{"pcs", "g", "g"});
+        addSeededRecipe(db, "Garlic Toast", "1. Toast bread.\n2. Spread garlic butter.",
+                new String[]{"bread", "butter", "garlic"}, new double[]{2, 20, 1}, new String[]{"pcs", "g", "pcs"});
+        addSeededRecipe(db, "Grilled Cheese", "1. Butter bread.\n2. Add cheese and grill in pan.",
+                new String[]{"bread", "cheese", "butter"}, new double[]{2, 2, 10}, new String[]{"pcs", "pcs", "g"});
+        addSeededRecipe(db, "Tomato Rice", "1. Sauté tomatoes and onions.\n2. Mix with cooked rice.",
+                new String[]{"rice", "tomato", "onion"}, new double[]{200, 2, 1}, new String[]{"g", "pcs", "pcs"});
+        addSeededRecipe(db, "Fried Rice", "1. Sauté rice and egg in oil.",
+                new String[]{"rice", "egg", "oil"}, new double[]{250, 2, 15}, new String[]{"g", "pcs", "ml"});
+        addSeededRecipe(db, "Pasta Arrabbiata", "1. Boil pasta.\n2. Cook tomatoes and garlic in oil.\n3. Combine.",
+                new String[]{"pasta", "tomato", "garlic", "oil"}, new double[]{200, 3, 2, 20}, new String[]{"g", "pcs", "pcs", "ml"});
+        addSeededRecipe(db, "Simple Salad", "1. Chop vegetables.\n2. Drizzle with oil.",
+                new String[]{"tomato", "onion", "oil"}, new double[]{2, 1, 10}, new String[]{"pcs", "pcs", "ml"});
+        addSeededRecipe(db, "Mashed Potatoes", "1. Boil potatoes.\n2. Mash with butter and milk.",
+                new String[]{"potato", "butter", "milk"}, new double[]{3, 30, 50}, new String[]{"pcs", "g", "ml"});
+        addSeededRecipe(db, "French Fries", "1. Cut potatoes.\n2. Deep fry in hot oil.",
+                new String[]{"potato", "oil"}, new double[]{2, 200}, new String[]{"pcs", "ml"});
+        addSeededRecipe(db, "Garlic Butter Pasta", "1. Boil pasta.\n2. Toss in garlic butter.",
+                new String[]{"pasta", "garlic", "butter"}, new double[]{200, 2, 30}, new String[]{"g", "pcs", "g"});
+        addSeededRecipe(db, "Tomato Soup", "1. Puree tomatoes.\n2. Simmer with garlic butter.",
+                new String[]{"tomato", "butter", "garlic"}, new double[]{4, 20, 1}, new String[]{"pcs", "g", "pcs"});
+        addSeededRecipe(db, "Mac and Cheese", "1. Cook pasta.\n2. Make cheese sauce with butter and milk.\n3. Mix.",
+                new String[]{"pasta", "cheese", "milk", "butter"}, new double[]{200, 100, 100, 20}, new String[]{"g", "g", "ml", "g"});
     }
 }

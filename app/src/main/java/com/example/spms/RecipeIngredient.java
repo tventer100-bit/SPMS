@@ -13,5 +13,6 @@ public class RecipeIngredient {
     public String getName(){return name;}
     public double getQuantity(){return quantity;}
     public String getUnit(){return unit;}
+    public void setUnit(String unit){this.unit = unit; }
 }
 

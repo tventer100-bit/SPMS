@@ -16,5 +16,9 @@ public class Recipe {
     public String getName(){return name;}
     public String getInstructions(){return instructions;}
     public List<RecipeIngredient> getIngredients(){return ingredients;}
-    public void setIngredients(List<RecipeIngredient>ingredients){this.ingredients = ingredients;}
+    // Setters
+    public void setRecipe_ID(int recipe_ID){ this.recipe_ID = recipe_ID; }
+    public void setName(String name){ this.name = name; }
+    public void setInstructions(String instructions){this.instructions = instructions;}
+    public void setIngredients(List<RecipeIngredient> ingredients) {this.ingredients = ingredients;}
 }
