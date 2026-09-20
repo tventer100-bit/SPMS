@@ -132,16 +132,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    private double normalizeQuantity(double quantity, String unit){
-        if(unit == null) return quantity;
+    private double normalizeQuantity(double quantity, String unit) {
+        if (unit == null) return quantity;
         String u = unit.trim().toLowerCase();
 
-        switch(u){
-            case "kg": case "kilogram": case "kilograms": case "l": case "liter": case "liters": return quantity * 1000.0;
-            default: return quantity;
+        switch (u) {
+            case "kg":
+            case "kilogram":
+            case "kilograms":
+            case "l":
+            case "liter":
+            case "liters":
+                return quantity * 1000.0;
+            default:
+                return quantity;
         }
     }
 
+    public Recipe getRecipeById(int recipe_ID) {
+        Recipe recipe = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cur = db.rawQuery("SELECT * FROM recipes WHERE recipes_ID = ?", new String[]{String.valueOf(recipe_ID)});
+
+        if (cur.moveToFirst()) {
+            String name = cur.getString(cur.getColumnIndexOrThrow("name"));
+            String instructions = cur.getString(cur.getColumnIndexOrThrow("instructions"));
+
+            recipe = new Recipe(recipe_ID, name, instructions);
+            // Reuse your existing helper method to fetch ingredients for this recipe
+            recipe.setIngredients(getIngredientsForRecipe(db, recipe_ID));
+        }
+        cur.close();
+
+        return recipe;
+    }
     private List<Recipe> getAllRecipesWithIngredients(){
         List<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
