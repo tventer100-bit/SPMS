@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
     private BottomNavigationView bottomNav;
 
     private final ActivityResultLauncher<Intent> addEditLauncher = registerForActivityResult(
-         new ActivityResultContract.StartActivityForResult(), result -> {
+         new ActivityResultContracts.StartActivityForResult(), result -> {
              if(result.getResultCode() == RESULT_OK){
                  loadPantryItems();
              }
@@ -40,8 +42,8 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         setContentView(R.layout.activity_main);
         dbHelper = new DatabaseHelper(this);
 
-        recyclerView = findViewById(R.id.recycleViewPantry);
-        tvEmptySate = findViewById(R.id.tvEmptyPantryState);
+        recyclerView = findViewById(R.id.recyclerViewPantry);
+        tvEmptyState = findViewById(R.id.tvEmptyPantryState);
         fabAdd = findViewById(R.id.fabAddPantryItem);
         bottomNav = findViewById(R.id.bottomNavigation);
 
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
             if(itemID == R.id.nav_pantry){
                 return true;
             }else if(itemID == R.id.nav_suggestions){
-                startActivity(new Intent(MainActivity.this, suggestedRecipesActivity.class));
+                startActivity(new Intent(MainActivity.this, SuggestedRecipeActivity.class));
                 return true;
             }else if(itemID == R.id.nav_settings){
                 startActivity((new Intent(MainActivity.this, SettingsActivity.class)));

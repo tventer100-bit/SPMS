@@ -29,7 +29,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
 
         dbHelper = new DatabaseHelper(this);
 
-        recyclerView = findViewById(R.id.recyclerViewSuggestedRecipes);
+        recyclerView = findViewById(R.id.recylerViewSuggestedRecipes);
         tvZeroMatchMessage = findViewById(R.id.tvZeroMatchMessage);
         bottomNav = findViewById(R.id.bottomNavigationSuggestions);
 

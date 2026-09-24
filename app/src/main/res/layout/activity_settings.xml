@@ -35,7 +35,7 @@
             android:text="Default Measurement Unit"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layour_marginTop="16dp"/>
+            android:layout_marginTop="16dp"/>
 
         <Spinner
             android:id="@+id/spinnerDefaultUnit"
