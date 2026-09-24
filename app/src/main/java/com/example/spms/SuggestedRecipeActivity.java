@@ -43,13 +43,13 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_pantry) {
-                startActivity(new Intent(SuggestedRecipesActivity.this, MainActivity.class));
+                startActivity(new Intent(SuggestedRecipeActivity.this, MainActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.nav_suggestions) {
                 return true;
             } else if (itemId == R.id.nav_settings) {
-                startActivity(new Intent(SuggestedRecipesActivity.this, SettingsActivity.class));
+                startActivity(new Intent(SuggestedRecipeActivity.this, SettingsActivity.class));
                 finish();
                 return true;
             }
@@ -82,7 +82,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
 
     @Override
     public void onRecipeClick(Recipe recipe) {
-        Intent intent = new Intent(SuggestedRecipesActivity.this, RecipeDetailActivity.class);
+        Intent intent = new Intent(SuggestedRecipeActivity.this, RecipeDetailActivity.class);
         intent.putExtra("EXTRA_RECIPE_ID", recipe.getRecipe_ID());
         startActivity(intent);
     }

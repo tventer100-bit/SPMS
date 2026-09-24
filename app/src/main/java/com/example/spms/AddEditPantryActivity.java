@@ -47,7 +47,7 @@ public class AddEditPantryActivity extends AppCompatActivity {
                 spinnerUnit.setSelection(spinnerPosition);
             }
             setTitle("Edit Ingredient");
-            btnSave.setText("Update Ingredient")
+            btnSave.setText("Update Ingredient");
         }else{
             setTitle("Add Ingredient");
             btnSave.setText("Save Ingredient");

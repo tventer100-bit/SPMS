@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
     private FloatingActionButton fabAdd;
     private BottomNavigationView bottomNav;
 
-    private final ActivityResultLauncher<Intent> addEditLauncher = rgisterForActivityResult(
+    private final ActivityResultLauncher<Intent> addEditLauncher = registerForActivityResult(
          new ActivityResultContract.StartActivityForResult(), result -> {
              if(result.getResultCode() == RESULT_OK){
                  loadPantryItems();
