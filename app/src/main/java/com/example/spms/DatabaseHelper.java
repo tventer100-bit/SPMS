@@ -100,6 +100,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return matchingRecipes;
     }
 
+
+
     public List<Recipe> getAlmostThereRecipes() {
         List<Recipe> matchingRecipes = new ArrayList<>();
         List<Recipe> allRecipes = getAllRecipesWithIngredients();

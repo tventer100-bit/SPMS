@@ -1,5 +1,6 @@
 package com.example.spms;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -9,6 +10,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 public class AddEditPantryActivity extends AppCompatActivity {
     private EditText edtName, edtQuantity, edtExpiry;
@@ -52,8 +56,38 @@ public class AddEditPantryActivity extends AppCompatActivity {
             setTitle("Add Ingredient");
             btnSave.setText("Save Ingredient");
         }
+
+        // --- ATTACH DATE PICKER HERE ---
+        edtExpiry.setOnClickListener(v -> showDatePickerDialog());
+
         btnSave.setOnClickListener(v -> savePantryItem());
     }
+
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Formats to DD/MM/YYYY with leading zeros
+                    String formattedDate = String.format(
+                            Locale.getDefault(),
+                            "%02d/%02d/%04d",
+                            selectedDay,
+                            selectedMonth + 1, // Calendar months are 0-indexed (Jan = 0)
+                            selectedYear
+                    );
+                    edtExpiry.setText(formattedDate);
+                },
+                year, month, day
+        );
+
+        datePickerDialog.show();
+    }
+
     private void savePantryItem() {
         String name = edtName.getText().toString().trim();
         String qtyStr = edtQuantity.getText().toString().trim();

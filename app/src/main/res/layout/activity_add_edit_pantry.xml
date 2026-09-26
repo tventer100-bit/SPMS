@@ -100,9 +100,11 @@
             android:id="@+id/edtIngredientExpiry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:hint="YYYY-MM-DD"
-            android:inputType="date" />
+            android:hint="Select Expiry Date (DD/MM/YYYY)"
+            android:focusable="false"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:inputType="none" />
 
         <Button
             android:id="@+id/btnSaveIngredient"
