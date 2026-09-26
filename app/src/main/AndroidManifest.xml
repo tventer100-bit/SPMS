@@ -1,26 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Smart Pantry Management System"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SPMS">
+        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <!-- Screen 1: Pantry List (Main Entry Point) -->
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Screen 2: Add/Edit Ingredients -->
+        <activity
+            android:name=".AddEditPantryActivity"
+            android:label="Add Ingredients" />
+
+        <!-- Screen 3: Suggested Recipes -->
+        <activity
+            android:name=".SuggestedRecipeActivity"
+            android:label="Suggested Recipes" />
+
+        <!-- Screen 4: Recipe Details -->
+        <activity
+            android:name=".RecipeDetailActivity"
+            android:label="Recipe Details" />
+
+        <!-- Screen 5: Settings -->
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Settings" />
+    </application>
 </manifest>

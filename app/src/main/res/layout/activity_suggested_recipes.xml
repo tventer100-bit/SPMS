@@ -2,33 +2,54 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Toggle Button at Top -->
+    <Button
+        android:id="@+id/btnToggleAlmostThere"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Show 'Almost There' Recipes" />
+
+    <!-- RecyclerView anchored BELOW button and ABOVE bottom navigation -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSuggestedRecipes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/btnToggleAlmostThere"
+        android:layout_above="@id/bottomNavigationSuggestions"
+        android:clipToPadding="false"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"/>
+
+    <!-- Zero match empty state message -->
     <TextView
         android:id="@+id/tvZeroMatchMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/btnToggleAlmostThere"
+        android:layout_above="@id/bottomNavigationSuggestions"
         android:layout_centerInParent="true"
+        android:gravity="center"
         android:padding="24dp"
-        android:text="No recipes match your pantry yet.\nAdd more ingredients to your pantry to view suggestions!"
-        android:textAlignment="center"
+        android:text="No recipes match your pantry yet.\nAdd more ingredients to view suggestions!"
         android:textColor="@android:color/darker_gray"
         android:textSize="16sp"
         android:visibility="gone"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recylerViewSuggestedRecipes"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottomNavigationSuggestions"
-        android:clipToPadding="false"
-        android:paddingVertical="8dp"/>
-
+    <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationSuggestions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu"/>
+
 </RelativeLayout>

@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smart_pantry_management.db";
     private static final int DATABASE_VERSION = 1;
@@ -90,38 +89,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Strict Logic
     public List<Recipe> getSuggestedRecipes(){
         List<Recipe> matchingRecipes = new ArrayList<>();
-        List<pantryItem> pantry = getAllPantryItems();
         List<Recipe> allRecipes = getAllRecipesWithIngredients();
 
         for (Recipe recipe : allRecipes) {
-            boolean canMake = true;
-
-            for (RecipeIngredient repIng : recipe.getIngredients()) {
-                boolean found = false;
-
-                for (pantryItem pantryItem : pantry) {
-                    if (isNameMatch(repIng.getName(), pantryItem.getName())) {
-                        double normalizedPantryQuantity = normalizeQuantity(pantryItem.getQuantity(), pantryItem.getUnit());
-                        double normalizedRepQuantity = normalizeQuantity(repIng.getQuantity(), repIng.getUnit());
-                        if (normalizedPantryQuantity >= normalizedRepQuantity) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if (!found) {
-                    canMake = false;
-                    break;
-                }
-            }
-            if (canMake && !recipe.getIngredients().isEmpty()) {
+            int missingCount = getMissingIngredientCount(recipe);
+            if (missingCount == 0 && recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
                 matchingRecipes.add(recipe);
             }
         }
         return matchingRecipes;
     }
 
+    public List<Recipe> getAlmostThereRecipes() {
+        List<Recipe> matchingRecipes = new ArrayList<>();
+        List<Recipe> allRecipes = getAllRecipesWithIngredients();
+
+        for (Recipe recipe : allRecipes) {
+            int missingCount = getMissingIngredientCount(recipe);
+            // Strictly include only recipes missing 1 or 2 ingredients
+            if (missingCount == 1 || missingCount == 2) {
+                matchingRecipes.add(recipe);
+            }
+        }
+        return matchingRecipes;
+    }
+
+    public int getMissingIngredientCount(Recipe recipe) {
+        if (recipe == null || recipe.getIngredients() == null || recipe.getIngredients().isEmpty()) {
+            return -1;
+        }
+
+        List<pantryItem> pantry = getAllPantryItems();
+        if (pantry == null || pantry.isEmpty()) {
+            return recipe.getIngredients().size();
+        }
+
+        int missingCount = 0;
+
+        for (RecipeIngredient repIng : recipe.getIngredients()) {
+            if (repIng == null || repIng.getName() == null) continue;
+
+            boolean foundInPantry = false;
+
+            for (pantryItem item : pantry) {
+                if (item == null || item.getName() == null) continue;
+
+                // CRITICAL FIX: Use the fuzzy/plural matcher instead of equalsIgnoreCase
+                if (isNameMatch(repIng.getName(), item.getName())) {
+                    double pantryQty = normalizeQuantity(item.getQuantity(), item.getUnit());
+                    double reqQty = normalizeQuantity(repIng.getQuantity(), repIng.getUnit());
+
+                    if (pantryQty >= reqQty) {
+                        foundInPantry = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!foundInPantry) {
+                missingCount++;
+            }
+        }
+
+        return missingCount;
+    }
+
     private boolean isNameMatch(String name1, String name2){
+        if (name1 == null || name2 == null) return false;
+
         String n1 = name1.trim().toLowerCase();
         String n2 = name2.trim().toLowerCase();
 
@@ -160,27 +195,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String instructions = cur.getString(cur.getColumnIndexOrThrow("instructions"));
 
             recipe = new Recipe(recipe_ID, name, instructions);
-            // Reuse your existing helper method to fetch ingredients for this recipe
             recipe.setIngredients(getIngredientsForRecipe(db, recipe_ID));
         }
         cur.close();
 
         return recipe;
     }
-    private List<Recipe> getAllRecipesWithIngredients(){
+
+    private List<Recipe> getAllRecipesWithIngredients() {
         List<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+
         Cursor cur = db.rawQuery("SELECT * FROM recipes", null);
 
-        if(cur.moveToFirst()){
-            do{
+        if (cur.moveToFirst()) {
+            do {
                 int recipe_ID = cur.getInt(cur.getColumnIndexOrThrow("recipes_ID"));
                 String name = cur.getString(cur.getColumnIndexOrThrow("name"));
                 String instructions = cur.getString(cur.getColumnIndexOrThrow("instructions"));
+
                 Recipe recipe = new Recipe(recipe_ID, name, instructions);
-                recipe.setIngredients(getIngredientsForRecipe(db, recipe_ID));
+
+                List<RecipeIngredient> ingredients = getIngredientsForRecipe(db, recipe_ID);
+                recipe.setIngredients(ingredients);
+
                 recipes.add(recipe);
-            }while(cur.moveToNext());
+            } while (cur.moveToNext());
         }
         cur.close();
         return recipes;
@@ -201,13 +241,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cur.close();
         return ingredients;
     }
-    private void addSeededRecipe(SQLiteDatabase db, String name, String instructions, String[] ingNames,double[] quantity, String[] units){
+
+    private void addSeededRecipe(SQLiteDatabase db, String name, String instructions, String[] ingNames, double[] quantity, String[] units){
         ContentValues cValues = new ContentValues();
         cValues.put("name", name);
         cValues.put("instructions", instructions);
         long recipe_ID = db.insert("recipes", null, cValues);
 
-        for(int i = 0; i< ingNames.length; i++){
+        for(int i = 0; i < ingNames.length; i++){
             ContentValues iValues = new ContentValues();
             iValues.put("recipe_ID", recipe_ID);
             iValues.put("name", ingNames[i]);
@@ -216,8 +257,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.insert("recipe_ingredients", null, iValues);
         }
     }
+
     private void seedInitialRecipes(SQLiteDatabase db){
-        addSeededRecipe(db, "Scrambles Eggs",  "1. Whisk eggs.\n2. Melt butter in pan.\n3. Cook on low heat.",
+        addSeededRecipe(db, "Scrambled Eggs",  "1. Whisk eggs.\n2. Melt butter in pan.\n3. Cook on low heat.",
                 new String[]{"egg", "butter"}, new double[]{2,10}, new String[]{"pcs", "g"});
         addSeededRecipe(db, "Boiled Eggs", "1. Place eggs in boiling water.\n2. Boil for 7 minutes.",
                 new String[]{"egg"}, new double[]{2}, new String[]{"pcs"});

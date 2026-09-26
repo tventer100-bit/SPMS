@@ -1,87 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/srollViewRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
-    
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:padding="16dp"
+    android:visibility="visible">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        
+
+        <!-- Name Label for Ingredient -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ingredient Name *"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"/>
-        
+            android:text="Ingredient Name"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Ingredient name input field -->
         <EditText
             android:id="@+id/edtIngredientName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp"
+            android:textSize="16sp"
             android:hint="e.g. Eggs, Tomato, Sugar"
             android:inputType="textCapWords"
-            android:layout_marginBottom="16dp"/>
+            android:minHeight="48dp"
+            android:textColor="@color/black"
+            android:textColorHint="@android:color/darker_gray"/>
 
+        <!-- Quantity and Unit-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
             android:baselineAligned="false"
-            android:layout_marginBottom="16dp">
-            
+            android:orientation="horizontal">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginEnd="8dp">
-                
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Quantity"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"/>
-                
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
                 <EditText
                     android:id="@+id/edtIngredientQuantity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="e.g. 2, 500"
-                    android:inputType="numberDecimal"/>
+                    android:inputType="numberDecimal" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Unit"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/spinnerUnit"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="4dp" />
+                <Spinner
+                    android:id="@+id/spinnerUnit"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
         </LinearLayout>
 
+        <!-- Expiry Date -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Epiry Date (Optional)"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"/>
+            android:text="Expiry Date (Optional)"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edtIngredientExpiry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             android:hint="YYYY-MM-DD"
-            android:inputType="date"
-            android:layout_marginBottom="24dp"/>
+            android:inputType="date" />
 
         <Button
             android:id="@+id/btnSaveIngredient"

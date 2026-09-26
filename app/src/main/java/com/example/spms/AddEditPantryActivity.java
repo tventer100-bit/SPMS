@@ -36,7 +36,7 @@ public class AddEditPantryActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if(intent.hasExtra("EXTRA_PANTRY_ID")){
-            pantry_ID = intent.getIntExtra("Extra_Pantry_ID", -1);
+            pantry_ID = intent.getIntExtra("EXTRA_PANTRY_ID", -1);
             edtName.setText(intent.getStringExtra("EXTRA_PANTRY_NAME"));
             edtQuantity.setText(String.valueOf(intent.getDoubleExtra("EXTRA_PANTRY_QUANTITY", 1.0)));
             edtExpiry.setText(intent.getStringExtra("EXTRA_PANTRY_EXPIRY"));

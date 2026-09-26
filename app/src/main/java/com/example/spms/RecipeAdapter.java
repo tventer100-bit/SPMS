@@ -1,6 +1,7 @@
 package com.example.spms;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,12 +10,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>{
     private final Context context;
     private List<Recipe> recipeList;
     private final OnRecipeClickListener listener;
+    private boolean isAlmostThereMode = false;
+    private DatabaseHelper dbHelper;
 
     public interface OnRecipeClickListener{
         void onRecipeClick(Recipe recipe);
@@ -24,6 +28,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         this.context = context;
         this.recipeList = recipeList;
         this.listener = listener;
+    }
+
+    public void setAlmostThereMode(boolean almostThereMode) {
+        isAlmostThereMode = almostThereMode;
     }
 
     @NonNull
@@ -36,10 +44,32 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     @Override
     public void onBindViewHolder(@NonNull RecipeAdapter.RecipeViewHolder holder, int position) {
         Recipe recipe = recipeList.get(position);
-        holder.tvRecipeName.setText(recipe.getName());
-        int count = recipe.getIngredients() != null ? recipe.getIngredients().size() : 0;
-        holder.tvIngredientCount.setText(count + " ingredients required (All in pantry)");
-        holder.itemView.setOnClickListener(v -> listener.onRecipeClick(recipe));
+        if (recipe == null) return;
+
+        holder.tvRecipeName.setText(recipe.getName() != null ? recipe.getName() : "Untitled Recipe");
+
+        if (isAlmostThereMode) {
+            int missingCount = dbHelper != null ? dbHelper.getMissingIngredientCount(recipe) : 0;
+
+            if (missingCount == 1) {
+                holder.tvIngredientCount.setText("Almost ready! Missing 1 ingredient");
+            } else if (missingCount > 1) {
+                holder.tvIngredientCount.setText("Almost ready! Missing " + missingCount + " ingredients");
+            } else {
+                holder.tvIngredientCount.setText("Ready to make!");
+            }
+
+            holder.tvIngredientCount.setTextColor(android.graphics.Color.parseColor("#FF9800")); // Orange
+        } else {
+            holder.tvIngredientCount.setText("Ready to make! All ingredients in pantry");
+            holder.tvIngredientCount.setTextColor(android.graphics.Color.parseColor("#4CAF50")); // Green
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRecipeClick(recipe);
+            }
+        });
     }
 
     @Override
@@ -48,7 +78,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
     public void updateData(List<Recipe> newRecipeList){
-        this.recipeList = newRecipeList;
+        if (newRecipeList != null) {
+            this.recipeList = new ArrayList<>(newRecipeList);
+        } else {
+            this.recipeList = new ArrayList<>();
+        }
         notifyDataSetChanged();
     }
 

@@ -100,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         Intent intent = new Intent(MainActivity.this, AddEditPantryActivity.class);
         intent.putExtra("EXTRA_PANTRY_ID", item.getPantry_ID());
         intent.putExtra("EXTRA_PANTRY_NAME", item.getName());
-        intent.putExtra("EXTRA_PANTRY_Quantity", item.getQuantity());
-        intent.putExtra("EXTRA_PANTRY_Unit", item.getUnit());
-        intent.putExtra("EXTRA_PANTRY_Expiry", item.getExpiry());
+        intent.putExtra("EXTRA_PANTRY_QUANTITY", item.getQuantity());
+        intent.putExtra("EXTRA_PANTRY_UNIT", item.getUnit());
+        intent.putExtra("EXTRA_PANTRY_EXPIRY", item.getExpiry());
         addEditLauncher.launch(intent);
     }
 
