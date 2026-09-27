@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ScrollView displaying complete recipe instructions -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:fitsSystemWindows="true"
@@ -11,6 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Recipe Title heading  -->
         <TextView
             android:id="@+id/tvDetailRecipeTitle"
             android:layout_width="match_parent"
@@ -20,6 +22,7 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="8dp"/>
 
+        <!-- Formatted Ingredients List -->
         <TextView
             android:id="@+id/tvDetailIngredientsList"
             android:layout_width="match_parent"
@@ -28,6 +31,7 @@
             android:lineSpacingExtra="4dp"
             android:layout_marginBottom="24dp"/>
 
+        <!-- Preparation section heading -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,6 +41,7 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="8dp"/>
 
+        <!-- Step-by-step preparation instructions -->
         <TextView
             android:id="@+id/tvDetailInstructions"
             android:layout_width="match_parent"

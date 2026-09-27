@@ -16,6 +16,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Recipe Title -->
         <TextView
             android:id="@+id/tvRecipeName"
             android:layout_width="match_parent"
@@ -24,6 +25,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <!-- Dynamic ingredient availability indicator -->
         <TextView
             android:id="@+id/tvRecipeIngredientCount"
             android:layout_width="match_parent"

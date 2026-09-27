@@ -106,12 +106,14 @@
             android:cursorVisible="false"
             android:inputType="none" />
 
+        <!-- Submission button -->
         <Button
             android:id="@+id/btnSaveIngredient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
             android:text="Save Ingredient" />
+
     </LinearLayout>
 
 </ScrollView>

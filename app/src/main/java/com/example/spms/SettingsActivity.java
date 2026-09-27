@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+// Activity for managing user preferences such as expiry alerts and default measurement units
 public class SettingsActivity extends AppCompatActivity {
     private SwitchCompat switchExpiryAlerts;
     private Spinner spinnerDefaultUnit;
@@ -31,6 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
         spinnerDefaultUnit = findViewById(R.id.spinnerDefaultUnit);
         bottomNav = findViewById(R.id.bottomNavigationSettings);
 
+        // Load unit dropdown options adapter
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.unit_options,
                 android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -51,6 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
             preferences.edit().putBoolean(KEY_EXPIRY_ALERTS, isChecked).apply();
         });
 
+        // Button navigation routing logic
         bottomNav.setSelectedItemId(R.id.nav_settings);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();

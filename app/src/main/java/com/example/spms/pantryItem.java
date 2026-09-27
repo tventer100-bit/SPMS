@@ -1,5 +1,5 @@
 package com.example.spms;
-
+// Data model class representing an ingredient stored in the user's pantry
 public class pantryItem {
     private int pantry_ID;
     private String name;
@@ -7,6 +7,7 @@ public class pantryItem {
     private String unit;
     private String expiry;
 
+    // Constructor used when retrieving items from SQLite
     public pantryItem(int pantry_ID, String name, double quantity, String unit, String expiry){
         this.pantry_ID = pantry_ID;
         this.name = name;
@@ -15,6 +16,7 @@ public class pantryItem {
         this.expiry = expiry;
     }
 
+    // Overloaded constructor for creating new items prior to DB insertion
     public pantryItem(String name, double quantity, String unit, String expiry){
         this.name = name;
         this.quantity = quantity;
@@ -22,6 +24,7 @@ public class pantryItem {
         this.expiry = expiry;
     }
 
+    // Getters
     public int getPantry_ID(){return pantry_ID;}
     public String getName(){ return name; }
     public double getQuantity() {return quantity;}

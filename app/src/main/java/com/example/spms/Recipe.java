@@ -1,5 +1,7 @@
 package com.example.spms;
 import java.util.List;
+
+// Data Model representing a recipe with instructions
 public class Recipe {
     private int recipe_ID;
     private String name;
@@ -12,10 +14,12 @@ public class Recipe {
         this.instructions = instructions;
     }
 
+    // Getters
     public int getRecipe_ID(){return recipe_ID;}
     public String getName(){return name;}
     public String getInstructions(){return instructions;}
     public List<RecipeIngredient> getIngredients(){return ingredients;}
+
     // Setters
     public void setRecipe_ID(int recipe_ID){ this.recipe_ID = recipe_ID; }
     public void setName(String name){ this.name = name; }

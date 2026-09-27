@@ -15,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
+// Activity for displaying recipe suggestions based on current pantry items
 public class SuggestedRecipeActivity extends AppCompatActivity implements RecipeAdapter.OnRecipeClickListener {
     private RecyclerView recyclerView;
     private RecipeAdapter adapter;
@@ -24,6 +25,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
     private BottomNavigationView bottomNav;
     private Button btnToggleAlmostThere;
 
+    // Tracks current mode
     private boolean showAlmostThere = false;
 
     @Override
@@ -44,6 +46,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        // Toggle logic for switching view between complete matches and 'Almost There'
         btnToggleAlmostThere.setOnClickListener(v -> {
             showAlmostThere = !showAlmostThere;
 
@@ -61,6 +64,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
             loadSuggestedRecipes();
         });
 
+        // Bottom Nag=vigation setup
         bottomNav.setSelectedItemId(R.id.nav_suggestions);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -89,6 +93,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
         }
     }
 
+    // Retrieves recipe suggestions from SQLite based on active toggle state
     private void loadSuggestedRecipes() {
         if (dbHelper == null || adapter == null) return;
 
@@ -123,6 +128,7 @@ public class SuggestedRecipeActivity extends AppCompatActivity implements Recipe
         }
     }
 
+    // Opens detailed activity view for the clicked recipe
     @Override
     public void onRecipeClick(Recipe recipe) {
         if (recipe != null) {

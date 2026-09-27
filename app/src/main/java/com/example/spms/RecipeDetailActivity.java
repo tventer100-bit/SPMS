@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+// Activity rendering full recipe details including required ingredient amounts and preparation steps
 public class RecipeDetailActivity extends AppCompatActivity {
 
     private TextView tvRecipeTitle, tvIngredientsList, tvInstructions;
@@ -23,6 +24,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         tvIngredientsList = findViewById(R.id.tvDetailIngredientsList);
         tvInstructions = findViewById(R.id.tvDetailInstructions);
 
+        // Parse target recipe ID passed from SuggestedRecipeActivity
         int recipe_ID = getIntent().getIntExtra("EXTRA_RECIPE_ID", -1);
 
         if (recipe_ID != -1) {
@@ -31,6 +33,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 tvRecipeTitle.setText(recipe.getName());
                 tvInstructions.setText(recipe.getInstructions());
 
+                // Format ingredient requirements into a formatted bullet list
                 StringBuilder builder = new StringBuilder();
                 for (RecipeIngredient ing : recipe.getIngredients()) {
                     builder.append("• ").append(ing.getQuantity()).append(" ").append(ing.getUnit()).append(" ").append(ing.getName()).append("\n");
@@ -41,7 +44,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 finish();
             }
         } else {
-            finish();
+            finish(); // Close activity if ID extra is missing
         }
     }
 }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+// RecyclerView Adapter used to render suggested recipes and missing ingredients
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>{
     private final Context context;
     private List<Recipe> recipeList;
@@ -20,6 +21,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     private boolean isAlmostThereMode = false;
     private DatabaseHelper dbHelper;
 
+    // Interface to listen for selection of a recipe item
     public interface OnRecipeClickListener{
         void onRecipeClick(Recipe recipe);
     }
@@ -30,6 +32,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         this.listener = listener;
     }
 
+    // Toggle between strict logic and 'Almost There'
     public void setAlmostThereMode(boolean almostThereMode) {
         isAlmostThereMode = almostThereMode;
     }
@@ -48,6 +51,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         holder.tvRecipeName.setText(recipe.getName() != null ? recipe.getName() : "Untitled Recipe");
 
+        // Dynamically style status message and colors depending on match state
         if (isAlmostThereMode) {
             int missingCount = dbHelper != null ? dbHelper.getMissingIngredientCount(recipe) : 0;
 
@@ -65,6 +69,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             holder.tvIngredientCount.setTextColor(android.graphics.Color.parseColor("#4CAF50")); // Green
         }
 
+        // Delegate item click handling to detailed view launcher
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onRecipeClick(recipe);
@@ -77,6 +82,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return recipeList != null ? recipeList.size() : 0;
     }
 
+    // Refresh recipe list data in adapter
     public void updateData(List<Recipe> newRecipeList){
         if (newRecipeList != null) {
             this.recipeList = new ArrayList<>(newRecipeList);
@@ -86,6 +92,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         notifyDataSetChanged();
     }
 
+    // ViewHolder caching item text elements
     public static class RecipeViewHolder extends RecyclerView.ViewHolder{
         TextView tvRecipeName, tvIngredientCount;
 

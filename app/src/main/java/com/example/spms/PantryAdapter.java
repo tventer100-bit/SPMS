@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+// RecyclerView Adapter that binds pantry item data to individual list item views.
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryViewHolder> {
     private final Context context;
     private List<pantryItem> pantryList;
     private final OnItemClickListener listener;
 
+    // Interface used for click actions or individual pantry items
     public interface OnItemClickListener{
         void onEditClick(pantryItem item);
         void onDeleteClick(pantryItem item);
@@ -56,12 +58,13 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
         return pantryList != null ? pantryList.size() : 0;
     }
 
+    // Updates dataset and refreshes UI list views
     public void updateData(List<pantryItem> newPantryList){
         this.pantryList = newPantryList;
         notifyDataSetChanged();
     }
 
-
+    // ViewHolder class caching references to item component views
     public static class PantryViewHolder extends RecyclerView.ViewHolder{
         TextView tvName, tvQuantity, tvExpiry;
         ImageButton btnEdit, btnDelete;

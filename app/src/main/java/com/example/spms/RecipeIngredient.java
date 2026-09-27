@@ -1,5 +1,6 @@
 package com.example.spms;
 
+// Model representing a single ingredient item required by a recipe
 public class RecipeIngredient {
     private String name;
     private double quantity;
@@ -10,6 +11,8 @@ public class RecipeIngredient {
         this.quantity = quantity;
         this.unit = unit;
     }
+
+    // Getters and Setters
     public String getName(){return name;}
     public double getQuantity(){return quantity;}
     public String getUnit(){return unit;}

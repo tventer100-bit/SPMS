@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Application Preferences Layout -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -20,7 +21,8 @@
             android:textStyle="bold"
             android:textColor="@android:color/black"
             android:layout_marginBottom="24dp"/>
-                
+
+        <!-- Toggle switch for enabling and disabling expiration notification alerts-->
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchExpiryAlerts"
             android:layout_width="match_parent"
@@ -28,7 +30,8 @@
             android:text="Alert: Expiring Soon!"
             android:textSize="16dp"
             android:paddingVertical="12dp"/>
-        
+
+            <!-- Selection dropdown for default measurement units -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,7 +47,8 @@
             android:layout_marginTop="8dp"/>
         
     </LinearLayout>
-    
+
+    <!-- Pinned bottom navigation view -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationSettings"
         android:layout_width="match_parent"

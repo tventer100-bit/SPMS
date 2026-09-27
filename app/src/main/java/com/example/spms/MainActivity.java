@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+// Main dashboard Activity displaying the list of current pantry items.
 public class MainActivity extends AppCompatActivity implements PantryAdapter.OnItemClickListener {
     private RecyclerView recyclerView;
     private PantryAdapter adapter;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
             addEditLauncher.launch(intent);
         } );
 
-        // Navagation between Screens
+        // Navigation between Screens
         bottomNav.setSelectedItemId(R.id.nav_pantry);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemID = item.getItemId();
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         loadPantryItems();
     }
 
+    // Loads pantry items from database and updates UI visibility
     private void loadPantryItems(){
         pantryList = dbHelper.getAllPantryItems();
         adapter.updateData(pantryList);
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         }
     }
 
+    // Handles edit action callback triggered from PantryAdapter
     @Override
     public void onEditClick(pantryItem item) {
         Intent intent = new Intent(MainActivity.this, AddEditPantryActivity.class);
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         addEditLauncher.launch(intent);
     }
 
+    // Handles delete action callback triggered from PantryAdapter including confirmation popup
     @Override
     public void onDeleteClick(pantryItem item) {
         new AlertDialog.Builder(this).setTitle("Delete Ingredients").setMessage("Are you sure you want to delete " + item.getName() + " from your pantry?")
